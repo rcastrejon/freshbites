@@ -1,7 +1,7 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Clock, Coins, Leaf, ShieldCheck, Utensils } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { RecipeCard } from "./card";
 
 const recipes = [
   {
@@ -66,91 +66,66 @@ const recipes = [
   },
 ];
 
-export default function Page() {
+export default async function Page(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const pageSize = 8;
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  const searchParams = await props.searchParams;
+  const currentPage = parseInt(searchParams.page as string) || 1;
+  const totalCount = recipes.length;
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const currentRecipes = recipes.slice(startIndex, endIndex);
+
+  const hasNextPage = endIndex < totalCount;
+  const hasPreviousPage = currentPage > 1;
+
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
-      {recipes.map((recipe, index) => (
-        <RecipeCard key={index} recipe={recipe} />
-      ))}
+    <div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
+        {currentRecipes.map((recipe, index) => (
+          <RecipeCard key={index} recipe={recipe} />
+        ))}
+      </div>
+      <PaginationButtons
+        hasNextPage={hasNextPage}
+        hasPreviousPage={hasPreviousPage}
+        currentPage={currentPage}
+      />
     </div>
   );
 }
 
-type Recipe = {
-  title: string;
-  author: string;
-  image: string;
-  time: string;
-  cost: string;
-  servings: string;
-  calories?: string;
-  verified: boolean;
-};
+export function PaginationButtons({
+  hasNextPage,
+  hasPreviousPage,
+  currentPage,
+}: {
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  currentPage: number;
+}) {
+  const PrevTag = hasPreviousPage ? Link : "button";
+  const NextTag = hasNextPage ? Link : "button";
 
-function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
-    <Card className="overflow-hidden rounded-none border shadow-sm transition-shadow duration-300 hover:shadow-md">
-      <div className="relative">
-        <img
-          src={recipe.image}
-          alt={recipe.title}
-          className="aspect-square w-full object-cover"
-        />
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-orange-950/80 to-transparent p-2">
-          <h4 className="font-header text-base font-semibold leading-none text-card">
-            {recipe.title}
-          </h4>
-          <p className="mt-1 text-xs italic text-muted">Por {recipe.author}</p>
-        </div>
-        <VerifiedBadge isVerified={recipe.verified} />
-      </div>
-      <CardContent className="p-2">
-        <div className="grid grid-cols-2 gap-1 text-xs">
-          <span className="flex items-center">
-            <Clock className="mr-1 h-3 w-3 text-muted-foreground" />{" "}
-            {recipe.time} min
-          </span>
-          <span className="flex items-center">
-            <Coins className="mr-1 h-3 w-3 text-muted-foreground" />{" "}
-            {recipe.cost}
-          </span>
-          <span className="flex items-center">
-            <Utensils className="mr-1 h-3 w-3 text-muted-foreground" />{" "}
-            {recipe.servings}
-          </span>
-          {recipe.calories ? (
-            <span className="flex items-center">
-              <Leaf className="mr-1 h-3 w-3 text-muted-foreground" />{" "}
-              {recipe.calories} kcal
-            </span>
-          ) : (
-            <span className="text-xs text-muted-foreground">
-              Calorías no disp.
-            </span>
-          )}
-        </div>
-      </CardContent>
-      <CardFooter className="p-2 pt-0">
-        <Button variant="outline" className="w-full rounded-none text-xs">
-          Ver receta
-        </Button>
-      </CardFooter>
-    </Card>
-  );
-}
+    <div className="mt-6 flex justify-center gap-2">
+      <Button variant="outline" disabled={!hasPreviousPage} asChild>
+        <PrevTag href={`?page=${currentPage - 1}`}>
+          <ChevronLeft className="mr-1 h-4 w-4" />
+          Anterior
+        </PrevTag>
+      </Button>
 
-function VerifiedBadge({ isVerified }: { isVerified: boolean }) {
-  if (!isVerified) {
-    return (
-      <Badge className="absolute right-2 top-2 bg-orange-400 text-white">
-        Comunidad
-      </Badge>
-    );
-  }
-  return (
-    <Badge className="absolute right-2 top-2 bg-green-600 text-white">
-      <ShieldCheck className="mr-1 inline h-3 w-3" />
-      Verificado
-    </Badge>
+      <Button variant="outline" disabled={!hasNextPage} asChild>
+        <NextTag href={`?page=${currentPage + 1}`}>
+          Siguiente
+          <ChevronRight className="ml-1 h-4 w-4" />
+        </NextTag>
+      </Button>
+    </div>
   );
 }

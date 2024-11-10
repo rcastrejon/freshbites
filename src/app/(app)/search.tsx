@@ -33,7 +33,7 @@ function InputField({
   return (
     <div className="relative w-full">
       <Input
-        className="peer pe-9"
+        className="peer bg-white pe-9 text-foreground"
         placeholder="Buscar recetas..."
         type="search"
         autoComplete="off"

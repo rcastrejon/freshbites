@@ -29,7 +29,7 @@ function Navbar() {
           <SidebarTrigger />
           <h2 className="font-header text-3xl font-bold">FreshBites</h2>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="hidden items-center space-x-2 sm:flex">
           <Suspense fallback={<SearchSkeleton />}>
             <Search />
           </Suspense>

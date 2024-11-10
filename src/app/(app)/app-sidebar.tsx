@@ -4,36 +4,40 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Book, Home } from "lucide-react";
-import Link from "next/link";
+import { Book, ChefHat, Home } from "lucide-react";
+import { SidebarLinkItem } from "./_components/sidebar/items";
+import { Suspense } from "react";
+import { Search, SearchSkeleton } from "./search";
 
 export function AppSidebar() {
   return (
     <Sidebar>
+      <SidebarHeader>
+        <div className="flex items-center">
+          <ChefHat className="mr-2 h-8 w-8 text-yellow-300" />
+          <h2 className="font-header text-3xl font-bold">FreshBites</h2>
+        </div>
+      </SidebarHeader>
       <SidebarContent>
+        <SidebarGroup className="sm:hidden">
+          <SidebarGroupContent>
+            <Suspense fallback={<SearchSkeleton />}>
+              <Search />
+            </Suspense>
+          </SidebarGroupContent>
+        </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/">
-                    <Home />
-                    <span>Inicio</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/recipes">
-                    <Book />
-                    <span>Recetas</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              <SidebarLinkItem title="Inicio" path="/" icon={<Home />} />
+              <SidebarLinkItem
+                title="Recetas"
+                path="/recipes"
+                icon={<Book />}
+              />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
