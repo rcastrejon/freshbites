@@ -2,25 +2,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { type Recipe } from "@/lib/db/types";
 import { Clock, Coins, Leaf, ShieldCheck, Utensils } from "lucide-react";
-
-export type Recipe = {
-  title: string;
-  author: string;
-  image: string;
-  time: string;
-  cost: string;
-  servings: string;
-  calories?: string;
-  verified: boolean;
-};
 
 export function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
     <Card className="overflow-hidden rounded-none border shadow-sm transition-shadow duration-300 hover:shadow-md">
       <div className="relative">
         <img
-          src={recipe.image}
+          src={recipe.imageUrl}
           alt={recipe.title}
           className="aspect-square w-full object-cover"
         />
@@ -28,7 +18,7 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
           <h4 className="font-header text-base font-semibold leading-none text-card">
             {recipe.title}
           </h4>
-          <p className="mt-1 text-xs italic text-muted">Por {recipe.author}</p>
+          <p className="mt-1 text-xs italic text-muted">Por John Doe</p>
         </div>
         <VerifiedBadge isVerified={recipe.verified} />
       </div>
@@ -36,7 +26,7 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
         <div className="grid grid-cols-2 gap-1 text-xs">
           <span className="flex items-center">
             <Clock className="mr-1 h-3 w-3 text-muted-foreground" />{" "}
-            {recipe.time} min
+            {recipe.timeInMinutes} min
           </span>
           <span className="flex items-center">
             <Coins className="mr-1 h-3 w-3 text-muted-foreground" />{" "}
@@ -46,10 +36,10 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
             <Utensils className="mr-1 h-3 w-3 text-muted-foreground" />{" "}
             {recipe.servings}
           </span>
-          {recipe.calories ? (
+          {recipe.caloriesPerServing ? (
             <span className="flex items-center">
               <Leaf className="mr-1 h-3 w-3 text-muted-foreground" />{" "}
-              {recipe.calories} kcal
+              {recipe.caloriesPerServing} kcal
             </span>
           ) : (
             <span className="text-xs text-muted-foreground">

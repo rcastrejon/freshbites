@@ -2,91 +2,33 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { RecipeCard } from "./card";
-
-const recipes = [
-  {
-    title: "Spicy Lentil Curry",
-    time: "30",
-    cost: "$4",
-    calories: "350",
-    servings: "3",
-    author: "Spice Master",
-    image: "https://placehold.co/600",
-    verified: true,
-  },
-  {
-    title: "Banana Oatmeal",
-    time: "10",
-    cost: "$2",
-    calories: undefined,
-    servings: "2",
-    author: "Breakfast King",
-    image: "https://placehold.co/600",
-    verified: false,
-  },
-  {
-    title: "Veggie Bean Burrito",
-    time: "15",
-    cost: "$3",
-    calories: "400",
-    servings: "2",
-    author: "Wrap Master",
-    image: "https://placehold.co/600",
-    verified: true,
-  },
-  {
-    title: "Egg Fried Rice",
-    time: "20",
-    cost: "$4",
-    calories: undefined,
-    servings: "3",
-    author: "Wok Star",
-    image: "https://placehold.co/600",
-    verified: false,
-  },
-  {
-    title: "Mediterranean Chickpea Salad",
-    time: "15",
-    cost: "$3",
-    calories: "300",
-    servings: "2",
-    author: "Salad Pro",
-    image: "https://placehold.co/600",
-    verified: true,
-  },
-  {
-    title: "Avocado Toast",
-    time: "5",
-    cost: "$3",
-    calories: undefined,
-    servings: "1",
-    author: "Toast Master",
-    image: "https://placehold.co/600",
-    verified: false,
-  },
-];
+import { db } from "@/lib/db";
+import { recipeTable } from "@/lib/db/schema";
+import { count } from "drizzle-orm";
 
 export default async function Page(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const pageSize = 8;
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
   const searchParams = await props.searchParams;
-  const currentPage = parseInt(searchParams.page as string) || 1;
-  const totalCount = recipes.length;
+  const { page } = searchParams as { [key: string]: string };
+  const currentPage = page ? parseInt(page) : 1;
 
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const currentRecipes = recipes.slice(startIndex, endIndex);
+  const pageSize = 8;
+  const offset = (currentPage - 1) * pageSize;
 
-  const hasNextPage = endIndex < totalCount;
+  const [[totalCount], recipes] = await db.batch([
+    db.select({ value: count() }).from(recipeTable),
+    db.select().from(recipeTable).limit(pageSize).offset(offset),
+  ]);
+
+  const totalPages = Math.ceil((totalCount?.value ?? 0) / pageSize);
+  const hasNextPage = currentPage < totalPages;
   const hasPreviousPage = currentPage > 1;
 
   return (
     <div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
-        {currentRecipes.map((recipe, index) => (
+        {recipes.map((recipe, index) => (
           <RecipeCard key={index} recipe={recipe} />
         ))}
       </div>
@@ -99,7 +41,7 @@ export default async function Page(props: {
   );
 }
 
-export function PaginationButtons({
+function PaginationButtons({
   hasNextPage,
   hasPreviousPage,
   currentPage,

@@ -21,8 +21,8 @@ export function Search() {
 
 export function SearchSkeleton() {
   return (
-    <form className="animate-pulse">
-      <InputField disabled />
+    <form>
+      <InputField />
     </form>
   );
 }
