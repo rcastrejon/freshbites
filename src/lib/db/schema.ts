@@ -9,7 +9,7 @@ export const userTable = sqliteTable("users", {
   createdAt: real().notNull(),
 });
 
-type NutritionalFact = {
+export type NutritionalFact = {
   key: string;
   value: string;
   unit: string;

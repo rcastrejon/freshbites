@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Recipe } from "@/lib/db/types";
 import { Clock, Coins, Leaf, ShieldCheck, Utensils } from "lucide-react";
+import Link from "next/link";
 
 export function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
@@ -49,8 +50,12 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
         </div>
       </CardContent>
       <CardFooter className="p-2 pt-0">
-        <Button variant="outline" className="w-full rounded-none text-xs">
-          Ver receta
+        <Button
+          variant="outline"
+          className="w-full rounded-none text-xs"
+          asChild
+        >
+          <Link href={`/recipes/${recipe.id}`}>Ver receta</Link>
         </Button>
       </CardFooter>
     </Card>
@@ -82,7 +87,7 @@ export function RecipeCardSkeleton() {
   );
 }
 
-function VerifiedBadge({ isVerified }: { isVerified: boolean }) {
+export function VerifiedBadge({ isVerified }: { isVerified: boolean }) {
   if (!isVerified) {
     return (
       <Badge className="absolute right-2 top-2 bg-orange-400 text-white">

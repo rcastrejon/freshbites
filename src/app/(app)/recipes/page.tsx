@@ -1,12 +1,41 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { RecipeCard } from "./card";
+import { RecipeCard, RecipeCardSkeleton } from "./card";
 import { db } from "@/lib/db";
 import { recipeTable } from "@/lib/db/schema";
 import { count } from "drizzle-orm";
+import { Suspense } from "react";
+import ChildrenWrapper from "./children-wrapper";
 
-export default async function Page(props: {
+export default function Page(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  return (
+    <div>
+      <h3 className="mb-3 border-b-2 border-b-foreground pb-1 font-header text-2xl font-bold">
+        Recetas
+      </h3>
+      <Suspense>
+        <ChildrenWrapper>
+          <Suspense
+            fallback={
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <RecipeCardSkeleton key={i} />
+                ))}
+              </div>
+            }
+          >
+            <RecipeList searchParams={props.searchParams} />
+          </Suspense>
+        </ChildrenWrapper>
+      </Suspense>
+    </div>
+  );
+}
+
+async function RecipeList(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const searchParams = await props.searchParams;
