@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { NutritionalFact, recipeTable } from "@/lib/db/schema";
+import { recipeTable } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { VerifiedBadge } from "../card";
@@ -30,7 +30,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
             />
             <div className="absolute bottom-0 left-0 right-0 flex items-end bg-gradient-to-t from-orange-950/80 to-transparent">
               <div className="p-3 text-card">
-                <h1 className="leading-0 font-header mb-1 mt-1 text-2xl font-bold leading-none">
+                <h1 className="leading-0 mb-1 mt-1 font-header text-2xl font-bold leading-none">
                   {recipe.title}
                 </h1>
                 <p className="text-xs text-muted">{recipe.description}</p>
@@ -86,14 +86,28 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
               </div>
             </div>
           </div>
-          <NutritionalFacts values={recipe.nutritionalFacts} />
+          <Card className="mt-3 bg-white">
+            <CardContent className="p-2">
+              <h2 className="mb-1 text-sm font-bold">
+                Información nutricional
+              </h2>
+              <div className="grid grid-cols-2 gap-1 text-xs">
+                {recipe.nutritionalFacts.map((value, index) => (
+                  <p key={index}>
+                    {value.key}: {value.value}
+                    {value.unit}
+                  </p>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
       <Separator className="my-3 bg-border" />
       <div className="p-3">
         <div className="md:flex md:space-x-4">
           <div className="mb-3 md:mb-0 md:w-1/2">
-            <h2 className="font-header mb-2 text-xl font-bold">Ingredientes</h2>
+            <h2 className="mb-2 font-header text-xl font-bold">Ingredientes</h2>
             <ul className="list-disc space-y-1 pl-4">
               {recipe.ingredients.map((ingredient, index) => (
                 <li key={index} className="text-sm">
@@ -103,7 +117,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
             </ul>
           </div>
           <div className="md:w-1/2">
-            <h2 className="font-header mb-2 text-xl font-bold">
+            <h2 className="mb-2 font-header text-xl font-bold">
               Instrucciones
             </h2>
             <ol className="list-decimal space-y-2 pl-4">
@@ -117,27 +131,5 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
         </div>
       </div>
     </article>
-  );
-}
-
-function NutritionalFacts({ values }: { values: NutritionalFact[] }) {
-  if (!values || values.length === 0) {
-    return null;
-  }
-
-  return (
-    <Card className="mt-3 bg-white">
-      <CardContent className="p-2">
-        <h2 className="mb-1 text-sm font-bold">Información nutricional</h2>
-        <div className="grid grid-cols-2 gap-1 text-xs">
-          {values.map((value, index) => (
-            <p key={index}>
-              {value.key}: {value.value}
-              {value.unit}
-            </p>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
   );
 }

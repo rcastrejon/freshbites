@@ -18,6 +18,7 @@ export type NutritionalFact = {
 export const recipeTable = sqliteTable("recipes", {
   id: text().primaryKey(),
   title: text().notNull(),
+  description: text().notNull(),
   timeInMinutes: integer().notNull(),
   cost: real().notNull(),
   caloriesPerServing: integer(),

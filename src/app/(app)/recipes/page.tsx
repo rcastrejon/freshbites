@@ -4,9 +4,11 @@ import Link from "next/link";
 import { RecipeCard, RecipeCardSkeleton } from "./card";
 import { db } from "@/lib/db";
 import { recipeTable } from "@/lib/db/schema";
-import { count } from "drizzle-orm";
+import { count, inArray } from "drizzle-orm";
 import { Suspense } from "react";
 import ChildrenWrapper from "./children-wrapper";
+import { queryVectors } from "@/lib/server/vector";
+import { type Recipe } from "@/lib/db/types";
 
 export default function Page(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -39,16 +41,43 @@ async function RecipeList(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const searchParams = await props.searchParams;
-  const { page } = searchParams as { [key: string]: string };
+  const { page, q } = searchParams as { [key: string]: string };
   const currentPage = page ? parseInt(page) : 1;
 
   const pageSize = 8;
   const offset = (currentPage - 1) * pageSize;
 
-  const [[totalCount], recipes] = await db.batch([
-    db.select({ value: count() }).from(recipeTable),
-    db.select().from(recipeTable).limit(pageSize).offset(offset),
-  ]);
+  let totalCount: { value: number } | undefined;
+  let recipes: Recipe[];
+
+  if (q) {
+    const vectors = await queryVectors(q);
+    const scoreMap = Object.fromEntries(
+      vectors
+        .filter((vector) => vector.score > 0.72)
+        .map((vector) => [vector.id as string, vector.score]),
+    );
+    const ids = Object.keys(scoreMap);
+
+    [[totalCount], recipes] = await db.batch([
+      db
+        .select({ value: count() })
+        .from(recipeTable)
+        .where(inArray(recipeTable.id, ids)),
+      db
+        .select()
+        .from(recipeTable)
+        .where(inArray(recipeTable.id, ids))
+        .limit(pageSize),
+    ]);
+
+    recipes.sort((a, b) => (scoreMap[b.id] ?? 0) - (scoreMap[a.id] ?? 0));
+  } else {
+    [[totalCount], recipes] = await db.batch([
+      db.select({ value: count() }).from(recipeTable),
+      db.select().from(recipeTable).limit(pageSize).offset(offset),
+    ]);
+  }
 
   const totalPages = Math.ceil((totalCount?.value ?? 0) / pageSize);
   const hasNextPage = currentPage < totalPages;
