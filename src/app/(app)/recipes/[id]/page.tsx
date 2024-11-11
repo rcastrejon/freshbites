@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { recipeTable } from "@/lib/db/schema";
+import { NutritionalFact, recipeTable } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { VerifiedBadge } from "../card";
@@ -86,21 +86,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
               </div>
             </div>
           </div>
-          <Card className="mt-3 bg-white">
-            <CardContent className="p-2">
-              <h2 className="mb-1 text-sm font-bold">
-                Información nutricional
-              </h2>
-              <div className="grid grid-cols-2 gap-1 text-xs">
-                {recipe.nutritionalFacts.map((value, index) => (
-                  <p key={index}>
-                    {value.key}: {value.value}
-                    {value.unit}
-                  </p>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <NutritionalFacts nutritionalFacts={recipe.nutritionalFacts} />
         </div>
       </div>
       <Separator className="my-3 bg-border" />
@@ -131,5 +117,30 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
         </div>
       </div>
     </article>
+  );
+}
+
+function NutritionalFacts({
+  nutritionalFacts,
+}: {
+  nutritionalFacts: NutritionalFact[];
+}) {
+  if (nutritionalFacts.length === 0) {
+    return null;
+  }
+  return (
+    <Card className="mt-3 bg-white">
+      <CardContent className="p-2">
+        <h2 className="mb-1 text-sm font-bold">Información nutricional</h2>
+        <div className="grid grid-cols-2 gap-1 text-xs">
+          {nutritionalFacts.map((value, index) => (
+            <p key={index}>
+              {value.key}: {value.value}
+              {value.unit}
+            </p>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -11,6 +11,10 @@ import { Book, ChefHat, Home } from "lucide-react";
 import { SidebarLinkItem } from "./_components/sidebar/items";
 import { Suspense } from "react";
 import { Search, SearchSkeleton } from "./search";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { NavbarUser } from "./_components/sidebar/navbar-user";
 
 export function AppSidebar() {
   return (
@@ -42,7 +46,16 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <SignedIn>
+          <NavbarUser />
+        </SignedIn>
+        <SignedOut>
+          <Button size="lg" asChild>
+            <Link href="/sign-in">Iniciar sesión</Link>
+          </Button>
+        </SignedOut>
+      </SidebarFooter>
     </Sidebar>
   );
 }

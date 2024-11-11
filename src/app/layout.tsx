@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, DM_Serif_Display } from "next/font/google";
-import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
+
+import "./globals.css";
+import { esMX } from "@clerk/localizations";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,8 +41,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={cn(inter.variable, dmSerifDisplay.variable)}>
-      <body className="antialiased">{children}</body>
-    </html>
+    <ClerkProvider localization={esMX} dynamic>
+      <html lang="es" className={cn(inter.variable, dmSerifDisplay.variable)}>
+        <body className="antialiased">{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }
