@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Recipe } from "@/lib/db/types";
-import { Clock, Coins, Leaf, ShieldCheck, Utensils } from "lucide-react";
+import { Clock, Coins, Leaf, Pin, ShieldCheck, Utensils } from "lucide-react";
 import Link from "next/link";
+import { PinButton } from "./pin-button";
+import { ClientOnly } from "@/components/client-only";
 
 export function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
@@ -15,6 +17,19 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
           alt={recipe.title}
           className="aspect-square w-full object-cover"
         />
+        <ClientOnly>
+          <Button
+            size="icon"
+            variant="secondary"
+            className="absolute left-2 top-2 h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white data-[pinned=true]:bg-orange-500 data-[pinned=true]:text-white data-[pinned=true]:hover:bg-orange-600"
+            asChild
+          >
+            <PinButton recipe={recipe}>
+              <Pin className="h-4 w-4" />
+              <span className="sr-only">Anclar receta</span>
+            </PinButton>
+          </Button>
+        </ClientOnly>
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-orange-950/80 to-transparent p-2">
           <h4 className="font-header text-base font-semibold leading-none text-card">
             {recipe.title}

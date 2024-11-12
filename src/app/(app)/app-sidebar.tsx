@@ -14,7 +14,9 @@ import { Search, SearchSkeleton } from "./search";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { NavbarUser } from "./_components/sidebar/navbar-user";
+import { NavUser } from "./_components/sidebar/nav-user";
+import { NavPinned } from "./_components/sidebar/nav-pinned";
+import { ClientOnly } from "@/components/client-only";
 
 export function AppSidebar() {
   return (
@@ -45,10 +47,13 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <ClientOnly>
+          <NavPinned />
+        </ClientOnly>
       </SidebarContent>
       <SidebarFooter>
         <SignedIn>
-          <NavbarUser />
+          <NavUser />
         </SignedIn>
         <SignedOut>
           <Button size="lg" asChild>

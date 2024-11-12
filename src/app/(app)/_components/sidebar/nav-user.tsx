@@ -13,16 +13,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { ChevronsUpDown, Cog, LogOut } from "lucide-react";
 import Link from "next/link";
 
-export function NavbarUser() {
+export function NavUser() {
   const { user } = useUser();
   const { signOut } = useAuth();
-  const isMobile = useIsMobile();
+  const { isMobile } = useSidebar();
 
   if (!user) return null;
 
