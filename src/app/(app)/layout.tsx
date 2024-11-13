@@ -6,6 +6,15 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./app-sidebar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { CreateRecipeForm } from "./create-recipe";
 
 export default function Layout({ children }: React.PropsWithChildren) {
   return (
@@ -34,6 +43,18 @@ function Navbar() {
             <Search />
           </Suspense>
         </div>
+        <Dialog>
+          <DialogTrigger>test</DialogTrigger>
+          <DialogContent className="max-h-[90vh] overflow-y-scroll">
+            <DialogHeader>
+              <DialogTitle>Crear receta</DialogTitle>
+              <DialogDescription className="sr-only">
+                Formulario para crear una nueva receta
+              </DialogDescription>
+            </DialogHeader>
+            <CreateRecipeForm />
+          </DialogContent>
+        </Dialog>
       </div>
     </header>
   );

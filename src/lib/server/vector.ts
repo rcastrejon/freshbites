@@ -13,7 +13,12 @@ function getNamespace() {
   return `${codename}-${env}`;
 }
 
-function getRecipeEmbeddingText(recipe: Recipe) {
+export type RecipeVector = Pick<
+  Recipe,
+  "id" | "title" | "description" | "ingredients" | "instructions"
+>;
+
+function getRecipeEmbeddingText(recipe: RecipeVector) {
   return [
     recipe.title,
     recipe.description,
@@ -22,7 +27,7 @@ function getRecipeEmbeddingText(recipe: Recipe) {
   ].join("\n\n");
 }
 
-export async function upsertSingleVector(id: string, recipe: Recipe) {
+export async function upsertSingleVector(id: string, recipe: RecipeVector) {
   return await index.upsert(
     {
       id,
@@ -35,7 +40,7 @@ export async function upsertSingleVector(id: string, recipe: Recipe) {
   );
 }
 
-export async function upsertMultipleVectors(recipes: Recipe[]) {
+export async function upsertMultipleVectors(recipes: RecipeVector[]) {
   const toInsert = recipes.map((recipe) => ({
     id: recipe.id,
     data: getRecipeEmbeddingText(recipe),

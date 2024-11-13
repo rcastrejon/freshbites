@@ -9,6 +9,7 @@ import { Suspense } from "react";
 import ChildrenWrapper from "./children-wrapper";
 import { queryVectors } from "@/lib/server/vector";
 import { type Recipe } from "@/lib/db/types";
+import { desc } from "drizzle-orm";
 
 export default function Page(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -75,7 +76,12 @@ async function RecipeList(props: {
   } else {
     [[totalCount], recipes] = await db.batch([
       db.select({ value: count() }).from(recipeTable),
-      db.select().from(recipeTable).limit(pageSize).offset(offset),
+      db
+        .select()
+        .from(recipeTable)
+        .orderBy(desc(recipeTable.createdAt))
+        .limit(pageSize)
+        .offset(offset),
     ]);
   }
 

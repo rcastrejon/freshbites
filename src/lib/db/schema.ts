@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import { text, sqliteTable, real, integer } from "drizzle-orm/sqlite-core";
+import { newId } from "../server/ids";
 
 export const userTable = sqliteTable("users", {
   id: text().primaryKey(),
@@ -17,7 +18,9 @@ export type NutritionalFact = {
 };
 
 export const recipeTable = sqliteTable("recipes", {
-  id: text().primaryKey(),
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => newId("recipe")),
   title: text().notNull(),
   description: text().notNull(),
   timeInMinutes: integer().notNull(),
@@ -25,7 +28,7 @@ export const recipeTable = sqliteTable("recipes", {
   caloriesPerServing: integer(),
   servings: integer().notNull(),
   imageUrl: text().notNull(),
-  verified: integer({ mode: "boolean" }).notNull(),
+  verified: integer({ mode: "boolean" }).notNull().default(false),
   ingredients: text({ mode: "json" }).$type<string[]>().default([]).notNull(),
   instructions: text({ mode: "json" }).$type<string[]>().default([]).notNull(),
   nutritionalFacts: text({ mode: "json" })
