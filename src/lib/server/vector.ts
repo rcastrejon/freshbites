@@ -64,3 +64,9 @@ export async function queryVectors(query: string) {
     },
   );
 }
+
+export async function deleteVector(id: string) {
+  return await index.delete(id, {
+    namespace: getNamespace(),
+  });
+}

@@ -7,14 +7,13 @@ import {
   SidebarHeader,
   SidebarMenu,
 } from "@/components/ui/sidebar";
-import { Book, ChefHat, Home } from "lucide-react";
+import { Book, ChefHat, Home, Shield } from "lucide-react";
 import { SidebarLinkItem } from "./_components/sidebar/items";
 import { Suspense } from "react";
 import { Search, SearchSkeleton } from "./search";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { Protect, SignedOut } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { NavUser } from "./_components/sidebar/nav-user";
 import { NavPinned } from "./_components/sidebar/nav-pinned";
 import { ClientOnly } from "@/components/client-only";
 
@@ -44,6 +43,17 @@ export function AppSidebar() {
                 path="/recipes"
                 icon={<Book />}
               />
+              <Protect
+                condition={(has) =>
+                  has({ role: "org:member" }) || has({ role: "org:admin" })
+                }
+              >
+                <SidebarLinkItem
+                  title="Admin"
+                  path="/admin"
+                  icon={<Shield />}
+                />
+              </Protect>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -52,9 +62,6 @@ export function AppSidebar() {
         </ClientOnly>
       </SidebarContent>
       <SidebarFooter>
-        <SignedIn>
-          <NavUser />
-        </SignedIn>
         <SignedOut>
           <Button size="lg" asChild>
             <Link href="/sign-in">Iniciar sesión</Link>

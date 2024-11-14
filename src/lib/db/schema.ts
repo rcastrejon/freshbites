@@ -40,7 +40,9 @@ export const recipeTable = sqliteTable("recipes", {
     .$type<NutritionalFact[]>()
     .default([])
     .notNull(),
-  createdAt: text().default(sql`(CURRENT_TIMESTAMP)`),
+  createdAt: text()
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull(),
 });
 
 export const recipeRelations = relations(recipeTable, ({ one }) => ({
