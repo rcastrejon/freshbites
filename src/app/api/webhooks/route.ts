@@ -66,6 +66,8 @@ export async function POST(req: Request) {
         target: userTable.id,
         set: {
           username: evt.data.username!,
+          firstName: evt.data.first_name,
+          lastName: evt.data.last_name,
           imageUrl: evt.data.image_url,
           createdAt: evt.data.created_at,
         },

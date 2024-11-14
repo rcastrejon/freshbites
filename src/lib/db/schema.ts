@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { text, sqliteTable, real, integer } from "drizzle-orm/sqlite-core";
 import { newId } from "../server/ids";
 
@@ -11,6 +11,10 @@ export const userTable = sqliteTable("users", {
   createdAt: real().notNull(),
 });
 
+export const userRelations = relations(userTable, ({ many }) => ({
+  posts: many(recipeTable),
+}));
+
 export type NutritionalFact = {
   key: string;
   value: string;
@@ -21,6 +25,7 @@ export const recipeTable = sqliteTable("recipes", {
   id: text()
     .primaryKey()
     .$defaultFn(() => newId("recipe")),
+  authorId: text().references(() => userTable.id, { onDelete: "set null" }),
   title: text().notNull(),
   description: text().notNull(),
   timeInMinutes: integer().notNull(),
@@ -37,3 +42,10 @@ export const recipeTable = sqliteTable("recipes", {
     .notNull(),
   createdAt: text().default(sql`(CURRENT_TIMESTAMP)`),
 });
+
+export const recipeRelations = relations(recipeTable, ({ one }) => ({
+  author: one(userTable, {
+    fields: [recipeTable.authorId],
+    references: [userTable.id],
+  }),
+}));

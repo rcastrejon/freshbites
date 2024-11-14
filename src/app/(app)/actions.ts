@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { recipeTable } from "@/lib/db/schema";
 import { upsertSingleVector } from "@/lib/server/vector";
+import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { UTApi } from "uploadthing/server";
 import { z } from "zod";
@@ -38,6 +39,12 @@ function validateImage(file: File) {
 }
 
 export async function createRecipe(formData: FormData) {
+  const user = await currentUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+
   const result = createRecipeSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
@@ -72,7 +79,11 @@ export async function createRecipe(formData: FormData) {
 
   const [newRecipe] = await db
     .insert(recipeTable)
-    .values({ ...result.data, imageUrl: uploadResult.data.url })
+    .values({
+      ...result.data,
+      imageUrl: uploadResult.data.url,
+      authorId: user.id,
+    })
     .returning({
       id: recipeTable.id,
       title: recipeTable.title,

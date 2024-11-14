@@ -8,7 +8,7 @@ import { count, inArray } from "drizzle-orm";
 import { Suspense } from "react";
 import ChildrenWrapper from "./children-wrapper";
 import { queryVectors } from "@/lib/server/vector";
-import { type Recipe } from "@/lib/db/types";
+import { type RecipeWithAuthor } from "@/lib/db/types";
 import { desc } from "drizzle-orm";
 
 export default function Page(props: {
@@ -49,7 +49,7 @@ async function RecipeList(props: {
   const offset = (currentPage - 1) * pageSize;
 
   let totalCount: { value: number } | undefined;
-  let recipes: Recipe[];
+  let recipes: RecipeWithAuthor[];
 
   if (q) {
     const vectors = await queryVectors(q);
@@ -65,23 +65,27 @@ async function RecipeList(props: {
         .select({ value: count() })
         .from(recipeTable)
         .where(inArray(recipeTable.id, ids)),
-      db
-        .select()
-        .from(recipeTable)
-        .where(inArray(recipeTable.id, ids))
-        .limit(pageSize),
+      db.query.recipeTable.findMany({
+        with: {
+          author: true,
+        },
+        where: inArray(recipeTable.id, ids),
+        limit: pageSize,
+      }),
     ]);
 
     recipes.sort((a, b) => (scoreMap[b.id] ?? 0) - (scoreMap[a.id] ?? 0));
   } else {
     [[totalCount], recipes] = await db.batch([
       db.select({ value: count() }).from(recipeTable),
-      db
-        .select()
-        .from(recipeTable)
-        .orderBy(desc(recipeTable.createdAt))
-        .limit(pageSize)
-        .offset(offset),
+      db.query.recipeTable.findMany({
+        with: {
+          author: true,
+        },
+        orderBy: desc(recipeTable.createdAt),
+        limit: pageSize,
+        offset: offset,
+      }),
     ]);
   }
 
