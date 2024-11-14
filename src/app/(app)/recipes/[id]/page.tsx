@@ -36,7 +36,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
                 <p className="text-xs text-muted">{recipe.description}</p>
               </div>
             </div>
-            <VerifiedBadge isVerified={recipe.verified} />
+            <VerifiedBadge isVerified={recipe.verifiedAt !== null} />
           </div>
         </div>
         <div className="p-3 md:w-1/2">
