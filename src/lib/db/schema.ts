@@ -33,7 +33,7 @@ export const recipeTable = sqliteTable("recipes", {
   caloriesPerServing: integer(),
   servings: integer().notNull(),
   imageUrl: text().notNull(),
-  verified: integer({ mode: "boolean" }).notNull().default(false),
+  verifiedAt: integer({ mode: "timestamp" }),
   ingredients: text({ mode: "json" }).$type<string[]>().default([]).notNull(),
   instructions: text({ mode: "json" }).$type<string[]>().default([]).notNull(),
   nutritionalFacts: text({ mode: "json" })

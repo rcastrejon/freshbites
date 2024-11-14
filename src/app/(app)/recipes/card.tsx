@@ -41,7 +41,7 @@ export function RecipeCard({ recipe }: { recipe: RecipeWithAuthor }) {
               : "[ELIMINADO]"}
           </p>
         </div>
-        <VerifiedBadge isVerified={recipe.verified} />
+        <VerifiedBadge isVerified={recipe.verifiedAt !== null} />
       </div>
       <CardContent className="p-2">
         <div className="grid grid-cols-2 gap-1 text-xs">
