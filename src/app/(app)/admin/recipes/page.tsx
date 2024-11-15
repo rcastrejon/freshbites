@@ -43,9 +43,10 @@ async function getRecipes(page: number) {
 export default async function Page({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
+  const { page } = (await searchParams) as { [key: string]: string };
+  const currentPage = page ? parseInt(page) : 1;
   const { recipes, totalPages } = await getRecipes(currentPage);
 
   return (
