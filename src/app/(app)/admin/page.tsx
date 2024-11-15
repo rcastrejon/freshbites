@@ -117,7 +117,9 @@ export default async function Page() {
                       <span>{recipe.title}</span>
                     </div>
                   </TableCell>
-                  <TableCell>{recipe.author?.id ?? "[ELIMINADO]"}</TableCell>
+                  <TableCell>
+                    {recipe.author?.username ?? "[ELIMINADO]"}
+                  </TableCell>
                   <TableCell>
                     {formatDistanceToNow(recipe.createdAt, {
                       addSuffix: true,
@@ -184,7 +186,9 @@ export default async function Page() {
                       <Badge variant="outline">Sin verificar</Badge>
                     )}
                   </TableCell>
-                  <TableCell>{recipe.author?.id ?? "[ELIMINADO]"}</TableCell>
+                  <TableCell>
+                    {recipe.author?.username ?? "[ELIMINADO]"}
+                  </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Button variant="outline" size="icon">

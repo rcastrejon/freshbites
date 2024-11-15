@@ -85,7 +85,9 @@ export default async function Page({
                       <Badge variant="outline">Sin verificar</Badge>
                     )}
                   </TableCell>
-                  <TableCell>{recipe.author?.id ?? "[ELIMINADO]"}</TableCell>
+                  <TableCell>
+                    {recipe.author?.username ?? "[ELIMINADO]"}
+                  </TableCell>
                   <TableCell>
                     {formatDistanceToNow(recipe.createdAt, {
                       addSuffix: true,

@@ -58,7 +58,9 @@ export default async function Page() {
                       <span>{recipe.title}</span>
                     </div>
                   </TableCell>
-                  <TableCell>{recipe.author?.id ?? "[ELIMINADO]"}</TableCell>
+                  <TableCell>
+                    {recipe.author?.username ?? "[ELIMINADO]"}
+                  </TableCell>
                   <TableCell>
                     {formatDistanceToNow(recipe.createdAt, {
                       addSuffix: true,
