@@ -28,6 +28,7 @@ type Fact = {
 export function VerifyModal({ children, recipeId }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [calories, setCalories] = useState<string>("");
   const router = useRouter();
   const [facts, setFacts] = useState<Fact[]>([
     { key: "", value: "", unit: "" },
@@ -53,10 +54,13 @@ export function VerifyModal({ children, recipeId }: Props) {
   };
 
   const handleVerify = async () => {
+    if (!calories || facts.some((f) => !f.key || !f.value || !f.unit)) {
+      return;
+    }
+
     try {
       setLoading(true);
-      const validFacts = facts.filter((f) => f.key && f.value && f.unit);
-      await verifyRecipe(recipeId, validFacts);
+      await verifyRecipe(recipeId, facts, Number(calories));
       setOpen(false);
       router.refresh();
     } catch (error) {
@@ -76,6 +80,17 @@ export function VerifyModal({ children, recipeId }: Props) {
 
         <div className="space-y-4">
           <div className="space-y-2">
+            <h4 className="font-medium">Calorías por porción</h4>
+            <Input
+              type="number"
+              placeholder="Calorías"
+              value={calories}
+              onChange={(e) => setCalories(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
             <h4 className="font-medium">Información nutricional</h4>
             {facts.map((fact, i) => (
               <div key={i} className="flex gap-2">
@@ -83,16 +98,19 @@ export function VerifyModal({ children, recipeId }: Props) {
                   placeholder="Nombre"
                   value={fact.key}
                   onChange={(e) => handleFactChange(i, "key", e.target.value)}
+                  required
                 />
                 <Input
                   placeholder="Valor"
                   value={fact.value}
                   onChange={(e) => handleFactChange(i, "value", e.target.value)}
+                  required
                 />
                 <Input
                   placeholder="Unidad"
                   value={fact.unit}
                   onChange={(e) => handleFactChange(i, "unit", e.target.value)}
+                  required
                 />
                 {facts.length > 1 && (
                   <Button

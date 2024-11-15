@@ -24,7 +24,11 @@ export async function deleteRecipe(recipeId: string) {
   await deleteVector(recipeId);
 }
 
-export async function verifyRecipe(recipeId: string, facts: NutritionalFact[]) {
+export async function verifyRecipe(
+  recipeId: string,
+  facts: NutritionalFact[],
+  calories: number,
+) {
   const serverAuth = await auth();
   const guard =
     serverAuth.orgRole === "org:admin" || serverAuth.orgRole === "org:member";
@@ -36,6 +40,7 @@ export async function verifyRecipe(recipeId: string, facts: NutritionalFact[]) {
     .set({
       verifiedAt: new Date(),
       nutritionalFacts: facts,
+      caloriesPerServing: calories,
     })
     .where(eq(recipeTable.id, recipeId));
   if (result.rowsAffected === 0) {
