@@ -10,10 +10,13 @@ import { Separator } from "@/components/ui/separator";
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
 
-  const [recipe] = await db
-    .select()
-    .from(recipeTable)
-    .where(eq(recipeTable.id, id));
+  const recipe = await db.query.recipeTable.findFirst({
+    with: {
+      author: true,
+    },
+    where: eq(recipeTable.id, id),
+  });
+
   if (!recipe) {
     return notFound();
   }
@@ -33,6 +36,12 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
                 <h1 className="leading-0 mb-1 mt-1 font-header text-2xl font-bold leading-none">
                   {recipe.title}
                 </h1>
+                <p className="text-xs italic text-muted-foreground">
+                  Por{" "}
+                  {recipe.author
+                    ? `${recipe.author.firstName} ${recipe.author.lastName}`
+                    : "[ELIMINADO]"}
+                </p>
                 <p className="text-xs text-muted">{recipe.description}</p>
               </div>
             </div>
